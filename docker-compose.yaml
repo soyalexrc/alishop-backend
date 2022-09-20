@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  alishop_db:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - '43306:3306'
+    expose:
+      - '3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: "alishop21"
+      MYSQL_DATABASE: "db_alishop"
+      MYSQL_USER: "alishop"
+      MYSQL_PASSWORD: "1234"
+    networks:
+      mysql_network:
+        aliases:
+          - mysql_host
+networks:
+  mysql_network:
+    name: mysql_net
+    driver: bridge

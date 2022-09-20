@@ -1,0 +1,138 @@
+
+
+const Client = require('../models/Client');
+const {Op} = require('sequelize');
+const asyncHandler = require('../middleware/async');
+
+
+// @desc      Get all customers
+// @route     POST /api/v1/customers
+exports.getClients = asyncHandler(async (req, res, next) => {
+  // pagination
+  const page = parseInt(req.body.page, 10) || 1;
+  const limit = parseInt(req.body.limit, 10) || 10;
+  const startIndex = (page - 1) * limit;
+
+  const data = await Client.findAll({
+    where: {
+      [Op.and]: [
+        {
+          [Op.or]: [
+            {name: {[Op.like]: '%' + req.body.search + '%'}},
+            {email: {[Op.like]: '%' + req.body.search + '%'}},
+            {document: {[Op.like]: '%' + req.body.search + '%'}},
+          ]
+        },
+      ]
+    },
+    offset: startIndex,
+    limit: limit
+  })
+
+  const total = await Client.count()
+
+  res.status(200).json({
+    success: true,
+    data,
+    total
+  })
+
+})
+
+// @desc      Get workers by state
+// @route     POST /api/v1/workers/getByState
+exports.getClientsByState = asyncHandler(async (req, res, next) => {
+  // pagination
+  const page = parseInt(req.body.page, 10) || 1;
+  const limit = parseInt(req.body.limit, 10) || 10;
+  const startIndex = (page - 1) * limit;
+
+  const data = await Client.findAll({
+    where: {
+      rol: req.body.rol,
+    },
+    offset: startIndex,
+    limit: limit
+  })
+
+  const total = await Client.count()
+
+  res.status(200).json({
+    success: true,
+    data,
+    total
+  })
+
+})
+
+// @desc      Get customer by id
+// @route     POST /api/v1/customers/:id
+exports.getClientById = asyncHandler(async (req, res, next) => {
+  const result = await Client.findOne({
+    where: {
+      [Op.and]: [
+        { id: req.params.id },
+      ]
+    }
+  })
+
+  if (result === null) {
+    throw new Error('No se encontro cliente con el id ' + req.params.id)
+  }
+
+  res.status(200).json({
+    success: true,
+    data: result
+  })
+
+})
+
+// @desc      Create customer
+// @route     POST /api/v1/customers
+exports.createClient = asyncHandler(async (req, res, next) => {
+  const result = await Client.create(req.body);
+
+  res.status(200).json({
+    success: true,
+    message: `Se creo el cliente ${req.body.name} con exito!`,
+    data: result
+  })
+})
+
+// @desc      Update customer
+// @route     POST /api/v1/customers/:id
+exports.updateClient = asyncHandler(async (req, res, next) => {
+  const result = await Client.update(req.body, {where: {id: req.params.id}});
+
+  if (result[0] === 0) {
+    throw new Error('No se encontro un cliente con el id ' + req.params.id)
+  }
+
+  res.status(200).json({
+    success: true,
+    message: `Se edito el cliente ${req.body.name} con exito!`,
+    data: result,
+  })
+})
+
+// @desc      Delete customer
+// @route     POST /api/v1/customers/:id
+exports.deleteClient = asyncHandler(async (req, res, next) => {
+  const result = await Client.destroy({
+    where: {
+      id: req.params.id
+    }
+  });
+
+  if (result === 0) {
+    throw new Error('No se encontro un cliente con el id ' + req.params.id)
+  }
+
+  res.status(200).json({
+    success: true,
+    message: `Se elimino el cliente con exito!`,
+    data: result
+  })
+})
+
+
