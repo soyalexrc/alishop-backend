@@ -3,3 +3,6 @@ dist
 
 # mysql data
 mysql_data
+
+# Secret file
+.env
