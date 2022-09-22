@@ -42,7 +42,8 @@ exports.getProductById = asyncHandler(async (req, res, next) => {
       [Op.and]: [
         {id: req.params.id},
       ]
-    }
+    },
+    include: ['category', 'provider']
   })
 
   if (result === null) {
@@ -58,18 +59,54 @@ exports.getProductById = asyncHandler(async (req, res, next) => {
 
 // @desc      Get customer by slug
 // @route     POST /api/v1/customers/:slug
-exports.getProductBySlug = asyncHandler(async (req, res, next) => {
-  const result = await Product.findAll({
-    where: {slug: req.body.slug},
-  })
+exports.getProductsByCategory = asyncHandler(async (req, res, next) => {
+
+  const page = parseInt(req.body.page, 10) || 1;
+  const limit = parseInt(req.body.limit, 10) || 10;
+  const startIndex = (page - 1) * limit;
+
+  let result;
+  if (req.body.categoryId === 0) {
+    result = await Product.findAll({
+      where: {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              {name: {[Op.like]: '%' + req.body.search + '%'}},
+            ]
+          },
+        ]
+      },
+      offset: startIndex,
+      limit: limit
+    })
+  } else {
+    result = await Product.findAll({
+      where: {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              {name: {[Op.like]: '%' + req.body.search + '%'}},
+            ]
+          },
+          {
+            categoryId: req.body.categoryId
+          }
+        ]
+      },
+      offset: startIndex,
+      limit: limit
+    })
+  }
+
 
   if (result === null) {
-    throw new Error('No se encontro producto con el slug ' + req.body.slug)
+    throw new Error('No se encontro producto con la categoria seleccionada ')
   }
 
   res.status(200).json({
     success: true,
-    data: result
+    data: result,
   })
 
 })

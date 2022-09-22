@@ -28,17 +28,17 @@ const Product = sequelize.define('product', {
     required: true
   },
   detailPrice: {
-    type: DataTypes.DOUBLE,
+    type: DataTypes.JSON,
     allowNull: false,
     required: true
   },
   majorPrice: {
-    type: DataTypes.DOUBLE,
+    type: DataTypes.JSON,
     allowNull: false,
     required: true
   },
   packingPrice: {
-    type: DataTypes.DOUBLE,
+    type: DataTypes.JSON,
     allowNull: false,
     required: true
   },
@@ -53,7 +53,7 @@ const Product = sequelize.define('product', {
     required: true
   },
   images: {
-    type: DataTypes.STRING,
+    type: DataTypes.JSON,
     default: '',
   },
   slug: {

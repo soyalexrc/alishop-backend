@@ -10,10 +10,28 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
     where: {
       [Op.or]: [
         {title: {[Op.like]: '%' + req.body.search + '%'}},
-        {description: {[Op.like]: '%' + req.body.search + '%'}},
       ]
     }
   })
+
+  res.status(200).json({
+    success: true,
+    data: result
+  })
+
+})
+// @desc      Get  category by id
+// @route     GET /api/v1/categories/:id
+exports.getCategoryById = asyncHandler(async (req, res, next) => {
+  const result = await Category.findOne({
+    where: {
+        id: req.params.id
+    }
+  })
+
+  if (result[0] === 0) {
+    throw new Error('No se encontro una categoria con el id ' + req.params.id)
+  }
 
   res.status(200).json({
     success: true,
@@ -28,6 +46,7 @@ exports.createCategory = asyncHandler(async (req, res, next) => {
   const result = await Category.create(req.body);
 
   res.status(200).json({
+    message: 'Se registro la categoria con exito!',
     success: true,
     data: result
   })
@@ -44,6 +63,7 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: 'Se edito la categoria con exito!',
     data: result
   })
 })
@@ -63,6 +83,7 @@ exports.deleteCategory = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: 'Se elimino la categoria con exito!',
     data: result
   })
 

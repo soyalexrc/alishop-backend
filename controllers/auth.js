@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Client = require('../models/Client');
 const asyncHandler = require('../middleware/async');
 const jwt = require('jsonwebtoken');
 const sgMail = require('@sendgrid/mail');
@@ -10,9 +11,16 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // @desc      Get all categories
 // @route     POST /api/v1/categories
 exports.login = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({where: {email: req.body.email}});
+  let user = await User.findOne({where: {email: req.body.email}});
+  console.log(user);
 
-  if (!user) throw new Error('Usuario no encontrado!')
+  if (!user) {
+    user = await Client.findOne({where: {email: req.body.email}})
+    if (!user) throw new Error('Usuario no encontrado!')
+    if (user.password !== req.body.password) throw new Error('Constrasenas no coinciden!')
+  }
+
+
   if (user.password !== req.body.password) throw new Error('Constrasenas no coinciden!')
 
   const token = jwt.sign({
