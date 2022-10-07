@@ -20,10 +20,6 @@ Provider.hasMany(Product, {as: 'products'})
 Product.belongsTo(Category);
 Category.hasMany(Product, {as: 'products'})
 
-
-Product.belongsToMany(Order, {through: 'order_products'})
-Order.hasMany(Product, {as: 'products'})
-
 Order.belongsTo(Client);
 Client.hasMany(Order, { as: 'orders' });
 
@@ -44,7 +40,7 @@ main()
 //routes
 const clients = require('./routes/customers');
 const workers = require('./routes/workers');
-// const orders = require('./routes/orders');
+const orders = require('./routes/orders');
 const categories = require('./routes/categories');
 const products = require('./routes/products');
 const providers = require('./routes/providers');
@@ -66,11 +62,12 @@ if (process.env.NODE_ENV === 'development') {
 //mount routes
 app.use('/api/v1/clients', clients);
 app.use('/api/v1/workers', workers);
-// app.use('/api/v1/orders', orders);
+app.use('/api/v1/orders', orders);
 app.use('/api/v1/categories', categories);
 app.use('/api/v1/products', products);
-app.use('/api/v1/providers', providers);
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/orders', orders);
+app.use('/api/v1/providers', providers);
 
 
 app.use(errorHandler);

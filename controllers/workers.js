@@ -2,6 +2,8 @@
 const User = require('../models/User');
 const {Op} = require('sequelize');
 const asyncHandler = require('../middleware/async');
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
 // @desc      Get all customers
@@ -93,11 +95,32 @@ exports.getWorkerById = asyncHandler(async (req, res, next) => {
 exports.createWorker = asyncHandler(async (req, res, next) => {
   const result = await User.create(req.body);
 
-  res.status(200).json({
-    success: true,
-    message: `Se creo el trabajador ${req.body.name} con exito!`,
-    data: result
-  })
+  const msg = {
+    to: req.body.email, // Change to your recipient
+    from: 'appalishop@gmail.com', // Change to your verified sender
+    subject: 'Creacion de cliente exitosa! | Alishop',
+    templateId: 'd-f840da9b5d5f4a9bbbace0ba2a05d7f2',
+    dynamicTemplateData: {name: req.body.name, urlParam: ''},
+  }
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log(msg);
+      res.status(200).json({
+        success: true,
+        message: `Se creo el trabajador ${req.body.name} con exito!`,
+        data: result
+      })
+    })
+    .catch((error) => {
+      console.log(error)
+      res.status(500).json({
+        success: false,
+        message: `Ocurrio un error enviando el correo!`
+      })
+    })
+
+
 })
 
 // @desc      Update customer

@@ -41,8 +41,13 @@ exports.login = asyncHandler(async (req, res, next) => {
 // @desc      Create category
 // @route     POST /api/v1/categories
 exports.passwordRecovery = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({where: {email: req.body.email}});
-  if (!user) throw new Error('No se encontro un usuario con el email ingresado.');
+  let user = await User.findOne({where: {email: req.body.email}});
+  if (!user) {
+    user = await Client.findOne({where: {email: req.body.email}});
+    if (!user) {
+      throw new Error('No se encontro un usuario con el email ingresado.')
+    }
+  };
 
   const encryptedUser = await encryptValue(masterCryptoKey, JSON.stringify(user));
   console.log(encryptedUser);
@@ -50,7 +55,7 @@ exports.passwordRecovery = asyncHandler(async (req, res, next) => {
   console.log(req.body)
   const msg = {
     to: req.body.email, // Change to your recipient
-    from: 'alexander.perez@neomantis.cl', // Change to your verified sender
+    from: 'appalishop@gmail.com', // Change to your verified sender
     subject: 'Recuperación de contraseñas | Alishop',
     templateId: 'd-f840da9b5d5f4a9bbbace0ba2a05d7f2',
     dynamicTemplateData: {name: user.name, urlParam: encryptedUser},
@@ -65,7 +70,11 @@ exports.passwordRecovery = asyncHandler(async (req, res, next) => {
       })
     })
     .catch((error) => {
-      throw new Error('Ocurrio un error enviando el email ', error);
+      console.log(error)
+      res.status(500).json({
+        success: false,
+        message: `Ocurrio un error enviando el correo!`
+      })
     })
 })
 

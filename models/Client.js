@@ -5,15 +5,11 @@ const sequelize = require('../config/db');
 const Client = sequelize.define('client', {
   name: {
     type: DataTypes.STRING,
-    allowNull: false,
     required: true,
-    unique: true
   },
   email: {
     type: DataTypes.STRING,
-    allowNull: false,
     required: true,
-    unique: true
   },
   password: DataTypes.STRING,
   phone: {
