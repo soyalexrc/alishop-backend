@@ -8,10 +8,10 @@ const { Sequelize } = require('sequelize');
 //   port: 43306,
 // });
 
-const sequelize = new Sequelize('railway', 'root', 'kj5WXZqm7PqKaMmp0jm3', {
-  host: 'containers-us-west-52.railway.app',
+const sequelize = new Sequelize('railway', 'root', 'sZ0qcAdoxyyV7Bk3s9gB', {
+  host: 'containers-us-west-56.railway.app',
   dialect: 'mysql',
-  port: 7939,
+  port: 7652,
 });
 
 

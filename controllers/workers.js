@@ -98,9 +98,9 @@ exports.createWorker = asyncHandler(async (req, res, next) => {
   const msg = {
     to: req.body.email, // Change to your recipient
     from: 'appalishop@gmail.com', // Change to your verified sender
-    subject: 'Creacion de cliente exitosa! | Alishop',
-    templateId: 'd-f840da9b5d5f4a9bbbace0ba2a05d7f2',
-    dynamicTemplateData: {name: req.body.name, urlParam: ''},
+    subject: 'Creacion de usuario exitosa! | Alishop',
+    templateId: 'd-8b88f408ae1144cebcd4b0db6b719361',
+    dynamicTemplateData: {name: req.body.name, rol: req.body.rol, email: req.body.email, password: req.body.password},
   }
   sgMail
     .send(msg)

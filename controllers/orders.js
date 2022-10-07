@@ -129,11 +129,11 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
   console.log(client);
 
   const msg = {
-    to: req.body.email, // Change to your recipient
+    to: 'alex.neomantis@gmail.com', // Change to your recipient
     from: 'appalishop@gmail.com', // Change to your verified sender
     subject: 'Creacion de cliente exitosa! | Alishop',
-    templateId: 'd-f840da9b5d5f4a9bbbace0ba2a05d7f2',
-    dynamicTemplateData: {name: req.body.name, urlParam: ''},
+    templateId: 'd-b940005bde594dd49702cb1fef443b75',
+    dynamicTemplateData: {name: 'prueba', code: 'prueba-1234'},
   }
   sgMail
     .send(msg)
