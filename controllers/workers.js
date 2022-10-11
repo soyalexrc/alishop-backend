@@ -90,11 +90,9 @@ exports.getWorkerById = asyncHandler(async (req, res, next) => {
 
 })
 
-// @desc      Create customer
-// @route     POST /api/v1/customers
-exports.createWorker = asyncHandler(async (req, res, next) => {
-  const result = await User.create(req.body);
-
+// @desc      Send Email To Worker on Creation
+// @route     POST /api/v1/customers/sendEmailCreationToWorker
+exports.sendEmailCreationToWorker = asyncHandler(async (req, res, next) => {
   const msg = {
     to: req.body.email, // Change to your recipient
     from: 'appalishop@gmail.com', // Change to your verified sender
@@ -102,14 +100,14 @@ exports.createWorker = asyncHandler(async (req, res, next) => {
     templateId: 'd-8b88f408ae1144cebcd4b0db6b719361',
     dynamicTemplateData: {name: req.body.name, rol: req.body.rol, email: req.body.email, password: req.body.password},
   }
+
   sgMail
     .send(msg)
     .then(() => {
       console.log(msg);
       res.status(200).json({
         success: true,
-        message: `Se creo el trabajador ${req.body.name} con exito!`,
-        data: result
+        message: `Se envio un email  a el  Trabajador ${req.body.name} con exito!`,
       })
     })
     .catch((error) => {
@@ -119,8 +117,18 @@ exports.createWorker = asyncHandler(async (req, res, next) => {
         message: `Ocurrio un error enviando el correo!`
       })
     })
+})
 
+// @desc      Create customer
+// @route     POST /api/v1/customers
+exports.createWorker = asyncHandler(async (req, res, next) => {
+  const result = await User.create(req.body);
 
+  res.status(200).json({
+    success: true,
+    message: `Se creo el trabajador ${req.body.name} con exito!`,
+    data: result
+  })
 })
 
 // @desc      Update customer

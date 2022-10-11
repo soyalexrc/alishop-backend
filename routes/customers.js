@@ -4,7 +4,8 @@ const {
   createClient,
   getClients,
   deleteClient,
-  updateClient
+  updateClient,
+  sendEmailCreationToClient
 } = require('../controllers/clients');
 
 const router = express.Router();
@@ -13,12 +14,17 @@ router
   .route('/')
   .post(getClients)
 
-router.route('/create')
+router
+  .route('/create')
   .post(createClient);
 
-router.route('/getById')
+router
+  .route('/getById')
   .post(getClientById);
 
+router
+  .route('/sendEmailByCreation')
+  .post(sendEmailCreationToClient)
 
 router
   .route('/:id')

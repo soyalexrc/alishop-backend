@@ -6,7 +6,6 @@ const Provider = sequelize.define('provider', {
     type: DataTypes.STRING,
     allowNull: false,
     required: true,
-    unique: true
   },
   observations: DataTypes.STRING,
   email: DataTypes.STRING,

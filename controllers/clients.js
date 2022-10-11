@@ -76,7 +76,7 @@ exports.getClientById = asyncHandler(async (req, res, next) => {
       [Op.and]: [
         { id: req.params.id },
       ]
-    }
+    }, include: 'orders'
   })
 
   if (result === null) {
@@ -90,11 +90,10 @@ exports.getClientById = asyncHandler(async (req, res, next) => {
 
 })
 
-// @desc      Create customer
-// @route     POST /api/v1/customers
-exports.createClient = asyncHandler(async (req, res, next) => {
-  const result = await Client.create(req.body);
-
+// @desc      Send Email To Customer on Creation
+// @route     POST /api/v1/customers/sendEmailByCreation
+exports.sendEmailCreationToClient = asyncHandler(async (req, res, next) => {
+  console.log(req)
   const msg = {
     to: req.body.email, // Change to your recipient
     from: 'appalishop@gmail.com', // Change to your verified sender
@@ -102,14 +101,15 @@ exports.createClient = asyncHandler(async (req, res, next) => {
     templateId: 'd-8b88f408ae1144cebcd4b0db6b719361',
     dynamicTemplateData: {name: req.body.name, rol: req.body.rol, email: req.body.email, password: req.body.password},
   }
+
+
   sgMail
     .send(msg)
     .then(() => {
       console.log(msg);
       res.status(200).json({
         success: true,
-        message: `Se creo el cliente ${req.body.name} con exito!`,
-        data: result
+        message: `Se envio un email  a el  cliente ${req.body.name} con exito!`,
       })
     })
     .catch((error) => {
@@ -119,6 +119,18 @@ exports.createClient = asyncHandler(async (req, res, next) => {
         message: `Ocurrio un error enviando el correo!`
       })
     })
+})
+
+// @desc      Create customer
+// @route     POST /api/v1/customers
+exports.createClient = asyncHandler(async (req, res, next) => {
+  const result = await Client.create(req.body);
+
+  res.status(200).json({
+    success: true,
+    message: `Se creo el cliente ${req.body.name} con exito!`,
+    data: result
+  })
 
 
 

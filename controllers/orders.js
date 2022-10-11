@@ -121,28 +121,25 @@ exports.getOrderByState = asyncHandler(async (req, res, next) => {
 
 })
 
-// @desc      Create customer
-// @route     POST /api/v1/customers
-exports.createOrder = asyncHandler(async (req, res, next) => {
-  const result = await Order.create(req.body);
+// @desc      Send Email To Customer on Order Creation
+// @route     POST /api/v1/orders/sendEmailToCustomerByOrderCreation
+exports.sendEmailToCustomerByOrderCreation = asyncHandler(async (req, res, next) => {
   const client = await Client.findOne({where: {id: req.body.clientId}})
-  console.log(client);
-
   const msg = {
-    to: 'alex.neomantis@gmail.com', // Change to your recipient
+    to: client.dataValues.email, // Change to your recipient
     from: 'appalishop@gmail.com', // Change to your verified sender
-    subject: 'Creacion de cliente exitosa! | Alishop',
+    subject: 'Creacion de orden exitosa! | Alishop',
     templateId: 'd-b940005bde594dd49702cb1fef443b75',
     dynamicTemplateData: {name: 'prueba', code: 'prueba-1234'},
   }
+
   sgMail
     .send(msg)
     .then(() => {
-      console.log(msg);
+      console.log(msg);!!
       res.status(200).json({
         success: true,
-        message: `Se creo la orden con exito!`,
-        data: result
+        message: `Se envio un email con la confirmacion de orden a el cliente ${client.dataValues.name}, con exito!`,
       })
     })
     .catch((error) => {
@@ -152,6 +149,32 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
         message: `Ocurrio un error enviando el correo!`
       })
     })
+})
+
+// @desc      Create customer
+// @route     POST /api/v1/customers
+exports.createOrder = asyncHandler(async (req, res, next) => {
+  const client = await Client.findOne({where: {id: req.body.clientId}})
+  const order = {
+    ...req.body,
+    deliveryData: {
+      name: client.dataValues.name,
+      rut: client.dataValues.rut,
+      address: client.dataValues.address,
+      city: client.dataValues.city,
+      phone: client.dataValues.phone,
+      email: client.dataValues.email,
+      transport: client.dataValues.transport
+    }
+  }
+  const result = await Order.create(order);
+  console.log(result);
+
+  res.status(200).json({
+    success: true,
+    message: `Se creo la orden con exito!`,
+    data: result
+  })
 
 
 

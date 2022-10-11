@@ -5,6 +5,7 @@ const {
   createOrder,
   deleteOrder,
   getOrderById,
+  sendEmailToCustomerByOrderCreation
 } = require('../controllers/orders');
 
 const router = express.Router();
@@ -17,6 +18,8 @@ router
 router.route('/create')
   .post(createOrder)
 
+router.route('/sendEmailToCustomerByOrderCreation')
+  .post(sendEmailToCustomerByOrderCreation)
 
 router
   .route('/:id')

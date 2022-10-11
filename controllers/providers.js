@@ -44,7 +44,8 @@ exports.getProviderById = asyncHandler(async (req, res, next) => {
       [Op.and]: [
         { id: req.params.id },
       ]
-    }
+    },
+    include: 'products'
   })
 
   if (result === null) {

@@ -33,7 +33,8 @@ exports.login = asyncHandler(async (req, res, next) => {
 
   res.header('auth-token', token).status(200).json({
     success: true,
-    data: token
+    data: token,
+    rol: user.rol
   })
 
 })
