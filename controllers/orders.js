@@ -44,6 +44,24 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
   })
 })
 
+// @desc      Get all customers
+// @route     POST /api/v1/customers
+exports.getPendingOrders = asyncHandler(async (req, res, next) => {
+  // pagination
+
+  const data = await Order.findAll({
+    where: {
+      state: {[Op.notLike]: 'ENTREGADO A TRANSPORTE'},
+    },
+  })
+
+
+  res.status(200).json({
+    success: true,
+    data: data.length,
+  })
+})
+
 // @desc      Get customer by id
 // @route     POST /api/v1/customers/:id
 exports.getOrderById = asyncHandler(async (req, res, next) => {
@@ -136,11 +154,12 @@ exports.sendEmailToCustomerByOrderCreation = asyncHandler(async (req, res, next)
   sgMail
     .send(msg)
     .then(() => {
-      console.log(msg);!!
-      res.status(200).json({
-        success: true,
-        message: `Se envio un email con la confirmacion de orden a el cliente ${client.dataValues.name}, con exito!`,
-      })
+      console.log(msg);
+      !!
+        res.status(200).json({
+          success: true,
+          message: `Se envio un email con la confirmacion de orden a el cliente ${client.dataValues.name}, con exito!`,
+        })
     })
     .catch((error) => {
       console.log(error)
@@ -175,7 +194,6 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     message: `Se creo la orden con exito!`,
     data: result
   })
-
 
 
 })

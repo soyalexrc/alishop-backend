@@ -5,7 +5,8 @@ const {
   createOrder,
   deleteOrder,
   getOrderById,
-  sendEmailToCustomerByOrderCreation
+  sendEmailToCustomerByOrderCreation,
+  getPendingOrders
 } = require('../controllers/orders');
 
 const router = express.Router();
@@ -14,6 +15,8 @@ router
   .route('/')
   .post(getOrders)
 
+router.route('/getPending')
+  .get(getPendingOrders)
 
 router.route('/create')
   .post(createOrder)
