@@ -10,6 +10,7 @@ const Order = require('./models/Order');
 const Category = require('./models/Category');
 const Client = require('./models/Client');
 const Provider = require('./models/Provider');
+const OrderProducts = require('./models/OrderProducts');
 
 dotenv.config();
 
@@ -22,6 +23,10 @@ Category.hasMany(Product, {as: 'products'})
 
 Order.belongsTo(Client);
 Client.hasMany(Order, { as: 'orders' });
+
+Order.belongsToMany(Product, { through: OrderProducts });
+Product.belongsToMany(Order, { through: OrderProducts });
+
 
 async function main() {
   try {

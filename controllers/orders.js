@@ -15,22 +15,21 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
   const startIndex = (page - 1) * limit;
 
   const data = await Order.findAll({
+    order: [
+      ['createdAt', 'DESC']
+    ],
     where: {
       [Op.and]: [
-        {
-          [Op.or]: [
-            {state: {[Op.like]: '%' + req.body.state + '%'}},
-            {orderId: {[Op.like]: '%' + req.body.code + '%'}},
-          ]
-        },
+        {orderId: {[Op.like]: '%' + req.body.search + '%'}},
+        {state: {[Op.like]: '%' + req.body.state + '%'}},
         {
           createdAt: {
             [Op.between]: [req.body.dateFrom, req.body.dateTo]
           }
-        },
+        }
       ]
     },
-    include: ['client'],
+    include: ['client', 'products'],
     offset: startIndex,
     limit: limit
   })
@@ -173,9 +172,13 @@ exports.sendEmailToCustomerByOrderCreation = asyncHandler(async (req, res, next)
 // @desc      Create customer
 // @route     POST /api/v1/customers
 exports.createOrder = asyncHandler(async (req, res, next) => {
+  const count = await Order.count();
   const client = await Client.findOne({where: {id: req.body.clientId}})
+
+  const newOrderId = ('0000' + (count + 1)).slice(-4);
   const order = {
     ...req.body,
+    orderId: newOrderId,
     deliveryData: {
       name: client.dataValues.name,
       rut: client.dataValues.rut,
@@ -183,7 +186,15 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
       city: client.dataValues.city,
       phone: client.dataValues.phone,
       email: client.dataValues.email,
-      transport: client.dataValues.transport
+      transport: client.dataValues.transport,
+      dimensions: '',
+      description: '',
+      amountOfBoxes: 0,
+      evidence: '',
+      transactionNumber: '',
+      sender: 'Alice Valenzuela',
+      senderRut: '18.126.735-6',
+      estimatedDateDelivering: null,
     }
   }
   const result = await Order.create(order);
@@ -201,7 +212,20 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
 // @desc      Update customer
 // @route     POST /api/v1/customers/:id
 exports.updateOrder = asyncHandler(async (req, res, next) => {
-  console.log(req.body);
+
+  const duplicated = await Order.findAll({
+    where: {
+      transactionNumber: {[Op.eq]: req.body.transactionNumber}
+    }
+  })
+
+  console.log(duplicated);
+
+if (req.body.transactionNumber&& duplicated.length > 0) {
+  throw new Error('Ya existe un numero de transaccion con el valor de  ' + req.body.transactionNumber)
+}
+
+
   const result = await Order.update(req.body, {where: {id: req.params.id}});
 
   if (result[0] === 0) {
@@ -234,12 +258,12 @@ exports.deleteOrder = asyncHandler(async (req, res, next) => {
   });
 
   if (result === 0) {
-    throw new Error('No se encontro un producto con el id ' + req.params.id)
+    throw new Error('No se encontro la orden con el id ' + req.params.id)
   }
 
   res.status(200).json({
     success: true,
-    message: `Se elimino el producto ${req.body.name} con exito!`,
+    message: `Se elimino la orden ${req.body.name} con exito!`,
     data: result
   })
 })

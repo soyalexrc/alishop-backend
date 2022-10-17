@@ -26,10 +26,10 @@ const Order = sequelize.define('order', {
   estimatedDateDelivering: {
     type: DataTypes.DATE
   },
-  products: {
-    type: DataTypes.JSON,
-    required: true
-  },
+  // products: {
+  //   type: DataTypes.JSON,
+  //   required: true
+  // },
   paymentMethod: DataTypes.STRING(100),
   total: DataTypes.INTEGER,
   sender: {

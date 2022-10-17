@@ -5,8 +5,10 @@ const {
   createProduct,
   deleteProduct,
   getProductById,
-  getProductsByCategory
+  getProductsByCategory,
+  uploadFile
 } = require('../controllers/products');
+
 
 const router = express.Router();
 
@@ -16,6 +18,9 @@ router
 
 router.route('/create')
   .post(createProduct);
+
+router.route('/uploadFile')
+  .post(uploadFile)
 
 router
   .route('/:id')
